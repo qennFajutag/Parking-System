@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div style="text-align: center; margin: 3rem 0 4rem;">
+        <h1 style="color: var(--primary); margin-bottom: 1.5rem; font-weight: 700; font-size: 2.5rem;">Welcome to Park Smart</h1>
+        <p style="font-size: 1.25rem; max-width: 800px; margin: 0 auto; color: var(--secondary);">The modern solution for efficient parking management.</p>
+    </div>
+    
+    <!-- Stats Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8" style="margin-bottom: 4rem;">
+        <div class="card flex flex-col items-center">
+            <div class="flex items-center justify-center" style="width: 64px; height: 64px; background-color: rgba(37, 99, 235, 0.1); border-radius: 50%; margin-bottom: 1rem;">
+                <i class="fas fa-car" style="color: var(--primary); font-size: 1.5rem;"></i>
+            </div>
+            <h3 style="color: var(--dark); font-size: 2rem; font-weight: 700; margin: 0.5rem 0;">{{ available_spots }}</h3>
+            <p style="color: var(--secondary); margin: 0;">Available Spots</p>
+        </div>
+        
+        <div class="card flex flex-col items-center">
+            <div class="flex items-center justify-center" style="width: 64px; height: 64px; background-color: rgba(16, 185, 129, 0.1); border-radius: 50%; margin-bottom: 1rem;">
+                <i class="fas fa-parking" style="color: var(--success); font-size: 1.5rem;"></i>
+            </div>
+            <h3 style="color: var(--dark); font-size: 2rem; font-weight: 700; margin: 0.5rem 0;">{{ total_spots }}</h3>
+            <p style="color: var(--secondary); margin: 0;">Total Spots</p>
+        </div>
+        
+        <div class="card flex flex-col items-center">
+            <div class="flex items-center justify-center" style="width: 64px; height: 64px; background-color: rgba(245, 158, 11, 0.1); border-radius: 50%; margin-bottom: 1rem;">
+                <i class="fas fa-calendar-check" style="color: var(--warning); font-size: 1.5rem;"></i>
+            </div>
+            <h3 style="color: var(--dark); font-size: 2rem; font-weight: 700; margin: 0.5rem 0;">{{ todays_bookings }}</h3>
+            <p style="color: var(--secondary); margin: 0;">Today's Bookings</p>
+        </div>
+    </div>
+    
+    <!-- Features -->
+    <div class="card" style="margin-bottom: 4rem;">
+        <h2 style="color: var(--primary); margin-top: 0; margin-bottom: 2rem; text-align: center; font-weight: 600;">Why Choose Park Smart?</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="flex flex-col items-center text-center">
+                <div class="flex items-center justify-center" style="width: 64px; height: 64px; background-color: rgba(37, 99, 235, 0.1); border-radius: 50%; margin-bottom: 1rem;">
+                    <i class="fas fa-calendar-alt" style="color: var(--primary); font-size: 1.5rem;"></i>
+                </div>
+                <h3 style="color: var(--dark); font-weight: 600;">Easy Booking</h3>
+                <p style="color: var(--secondary);">Book parking spots in advance with our simple and intuitive interface.</p>
+            </div>
+            
+            <div class="flex flex-col items-center text-center">
+                <div class="flex items-center justify-center" style="width: 64px; height: 64px; background-color: rgba(16, 185, 129, 0.1); border-radius: 50%; margin-bottom: 1rem;">
+                    <i class="fas fa-clock" style="color: var(--success); font-size: 1.5rem;"></i>
+                </div>
+                <h3 style="color: var(--dark); font-weight: 600;">Real-time Availability</h3>
+                <p style="color: var(--secondary);">View real-time availability of parking spots and make informed decisions.</p>
+            </div>
+            
+            <div class="flex flex-col items-center text-center">
+                <div class="flex items-center justify-center" style="width: 64px; height: 64px; background-color: rgba(245, 158, 11, 0.1); border-radius: 50%; margin-bottom: 1rem;">
+                    <i class="fas fa-credit-card" style="color: var(--warning); font-size: 1.5rem;"></i>
+                </div>
+                <h3 style="color: var(--dark); font-weight: 600;">Secure Payments</h3>
+                <p style="color: var(--secondary);">Make secure payments online or pay on-site with multiple payment options.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Call to Action -->
+    <div style="text-align: center; margin-bottom: 4rem; padding: 2rem; background-color: #f8fafc; border-radius: var(--radius);">
+        <h2 style="color: var(--dark); margin-bottom: 1.5rem; font-weight: 600;">Ready to get started?</h2>
+        
+        {% if 'username' not in session %}
+            <a href="{{ url_for('register') }}" class="btn" style="margin-right: 1rem;">Register Now</a>
+            <a href="{{ url_for('login') }}" class="btn btn-outline">Login</a>
+        {% else %}
+            <a href="{{ url_for(session.role + '_dashboard') }}" class="btn">Go to Dashboard</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

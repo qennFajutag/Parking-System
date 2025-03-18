@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto; padding: 20px;">
+    <h2 style="color: #4CAF50; margin-bottom: 20px;">User Profile</h2>
+    
+    <div style="background: white; border-radius: 5px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <form method="POST" action="{{ url_for('user_profile') }}" style="display: flex; flex-direction: column; gap: 15px;">
+            <div>
+                <label for="username" style="display: block; margin-bottom: 5px;">Username:</label>
+                <input type="text" id="username" name="username" value="{{ user.username }}" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            
+            <div>
+                <label for="email" style="display: block; margin-bottom: 5px;">Email:</label>
+                <input type="email" id="email" name="email" value="{{ user.email }}" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            
+            <div>
+                <label for="phone" style="display: block; margin-bottom: 5px;">Phone Number:</label>
+                <input type="tel" id="phone" name="phone" value="{{ user.phone }}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            
+            <div>
+                <label for="current_password" style="display: block; margin-bottom: 5px;">Current Password (required to save changes):</label>
+                <input type="password" id="current_password" name="current_password" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            
+            <div>
+                <label for="new_password" style="display: block; margin-bottom: 5px;">New Password (leave blank to keep current):</label>
+                <input type="password" id="new_password" name="new_password" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            
+            <div>
+                <label for="confirm_password" style="display: block; margin-bottom: 5px;">Confirm New Password:</label>
+                <input type="password" id="confirm_password" name="confirm_password" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button type="submit" style="flex: 1; background-color: #4CAF50; color: white; padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;">Save Changes</button>
+                <a href="{{ url_for('user_dashboard') }}" style="flex: 1; background-color: #6c757d; color: white; padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; text-align: center; text-decoration: none;">Back to Dashboard</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

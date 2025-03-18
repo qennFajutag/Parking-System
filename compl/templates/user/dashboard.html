@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="padding: 20px;">
+    <h2 style="color: #4CAF50; margin-bottom: 20px;">User Dashboard</h2>
+    
+    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+        <!-- User Profile Card -->
+        <div style="flex: 1; min-width: 300px; background: white; border-radius: 5px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h3 style="color: #4CAF50; margin-top: 0;">Welcome, {{ session.username }}!</h3>
+            <p><a href="{{ url_for('user_profile') }}" style="color: #4CAF50; text-decoration: none;">View/Edit Profile</a></p>
+            <p><a href="{{ url_for('logout') }}" style="color: #dc3545; text-decoration: none;">Logout</a></p>
+        </div>
+        
+        <!-- Booking Form Card -->
+        <div style="flex: 2; min-width: 300px; background: white; border-radius: 5px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h3 style="color: #4CAF50; margin-top: 0;">Book a Parking Spot</h3>
+            <form id="booking-form" action="{{ url_for('book_spot') }}" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
+                <div>
+                    <label for="spot_id" style="display: block; margin-bottom: 5px;">Select Parking Spot:</label>
+                    <select id="spot_id" name="spot_id" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        <option value="">-- Select a Spot --</option>
+                        {% for spot in parking_spots %}
+                            <option value="{{ spot.spot_id }}">{{ spot.location }} - ${{ spot.price_per_hour }}/hr</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="start_time" style="display: block; margin-bottom: 5px;">Start Time:</label>
+                    <input type="datetime-local" id="start_time" name="start_time" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                
+                <div>
+                    <label for="end_time" style="display: block; margin-bottom: 5px;">End Time:</label>
+                    <input type="datetime-local" id="end_time" name="end_time" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                
+                <button type="submit" style="background-color: #4CAF50; color: white; padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;">Book Now</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- User Bookings -->
+    <div style="margin-top: 20px; background: white; border-radius: 5px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <h3 style="color: #4CAF50; margin-top: 0;">Your Bookings</h3>
+        
+        {% if bookings %}
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background-color: #f2f2f2;">
+                            <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Booking ID</th>
+                            <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Location</th>
+                            <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Start Time</th>
+                            <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">End Time</th>
+                            <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Status</th>
+                            <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Payment</th>
+                            <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in bookings %}
+                            <tr>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ booking.booking_id }}</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ booking.location }}</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;" class="format-datetime">{{ booking.start_time }}</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;" class="format-datetime">{{ booking.end_time }}</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">
+                                    <span class="status-{{ booking.status }}">{{ booking.status }}</span>
+                                </td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">
+                                    <span class="status-{{ booking.payment_status }}">{{ booking.payment_status }}</span>
+                                </td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">
+                                    {% if booking.status == 'pending' %}
+                                        <a href="{{ url_for('cancel_booking', booking_id=booking.booking_id) }}" class="cancel-booking" style="color: #dc3545; text-decoration: none; margin-right: 10px;">Cancel</a>
+                                    {% endif %}
+                                    
+                                    {% if booking.payment_status == 'unpaid' %}
+                                        <a href="{{ url_for('make_payment', booking_id=booking.booking_id) }}" style="color: #4CAF50; text-decoration: none;">Pay</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p>You don't have any bookings yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

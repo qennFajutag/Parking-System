@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto; padding: 20px;">
+    <h2 style="color: #4CAF50; margin-bottom: 20px;">Generate Reports</h2>
+    
+    <div style="background: white; border-radius: 5px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px;">
+        <form method="POST" action="{{ url_for('generate_report') }}" style="display: flex; flex-direction: column; gap: 15px;">
+            <div>
+                <label for="report_type" style="display: block; margin-bottom: 5px;">Report Type:</label>
+                <select id="report_type" name="report_type" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <option value="bookings">Bookings Report</option>
+                    <option value="revenue">Revenue Report</option>
+                    <option value="occupancy">Occupancy Report</option>
+                </select>
+            </div>
+            
+            <div>
+                <label for="start_date" style="display: block; margin-bottom: 5px;">Start Date:</label>
+                <input type="date" id="start_date" name="start_date" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            
+            <div>
+                <label for="end_date" style="display: block; margin-bottom: 5px;">End Date:</label>
+                <input type="date" id="end_date" name="end_date" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            
+            <button type="submit" style="background-color: #4CAF50; color: white; padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;">Generate Report</button>
+        </form>
+    </div>
+    
+    {% if report_data %}
+        <div style="background: white; border-radius: 5px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h3 style="color: #4CAF50; margin-top: 0;">{{ report_title }}</h3>
+            <p>Period: {{ start_date }} to {{ end_date }}</p>
+            
+            {% if report_type == 'bookings' %}
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background-color: #f2f2f2;">
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Booking ID</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">User</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Location</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Start Time</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">End Time</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Status</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Payment</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for booking in report_data %}
+                                <tr>
+                                    <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ booking.booking_id }}</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ booking.username }}</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ booking.location }}</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ booking.start_time }}</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ booking.end_time }}</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ booking.status }}</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ booking.payment_status }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% elif report_type == 'revenue' %}
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background-color: #f2f2f2;">
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Date</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Total Revenue</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Number of Bookings</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in report_data %}
+                                <tr>
+                                    <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ item.date }}</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #ddd;">${{ item.revenue }}</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ item.bookings }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr style="background-color: #f2f2f2; font-weight: bold;">
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">Total</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${{ total_revenue }}</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ total_bookings }}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            {% elif report_type == 'occupancy' %}
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background-color: #f2f2f2;">
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Location</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Total Hours</th>
+                                <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Occupancy Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in report_data %}
+                                <tr>
+                                    <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ item.location }}</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ item.hours }}</td>
+                                    <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ item.occupancy_rate }}%</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+            
+            <div style="margin-top: 20px;">
+                <a href="{{ url_for('download_report') }}" style="display: inline-block; background-color: #007bff; color: white; padding: 10px 15px; border-radius: 4px; text-decoration: none;">Download Report</a>
+            </div>
+        </div>
+    {% endif %}
+    
+    <div style="margin-top: 20px; text-align: center;">
+        <a href="{{ url_for('admin_dashboard') }}" style="display: inline-block; background-color: #6c757d; color: white; padding: 10px 15px; border-radius: 4px; text-decoration: none;">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

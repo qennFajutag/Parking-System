@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto; padding: 20px;">
+    <h2 style="color: #4CAF50; margin-bottom: 20px;">Booking Details</h2>
+    
+    <div style="background: white; border-radius: 5px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <div style="margin-bottom: 20px;">
+            <h3 style="color: #4CAF50; margin-top: 0;">Booking Information</h3>
+            <p><strong>Booking ID:</strong> {{ booking.booking_id }}</p>
+            <p><strong>Parking Spot:</strong> {{ booking.location }}</p>
+            <p><strong>Start Time:</strong> {{ booking.start_time }}</p>
+            <p><strong>End Time:</strong> {{ booking.end_time }}</p>
+            <p><strong>Duration:</strong> {{ duration }} hours</p>
+            <p><strong>Cost:</strong> ${{ total_cost }}</p>
+            <p><strong>Status:</strong> <span class="status-{{ booking.status }}">{{ booking.status }}</span></p>
+            <p><strong>Payment Status:</strong> <span class="status-{{ booking.payment_status }}">{{ booking.payment_status }}</span></p>
+        </div>
+        
+        {% if booking.payment_status == 'unpaid' and booking.status != 'cancelled' %}
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd;">
+                <h3 style="color: #4CAF50; margin-top: 0;">Payment Options</h3>
+                <form action="{{ url_for('make_payment', booking_id=booking.booking_id) }}" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
+                    <div>
+                        <label for="payment_method" style="display: block; margin-bottom: 5px;">Payment Method:</label>
+                        <select id="payment_method" name="payment_method" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" onchange="togglePaymentFields()">
+                            <option value="cash">Cash</option>
+                            <option value="gcash">GCash</option>
+                            <option value="credit_card">Credit Card</option>
+                        </select>
+                    </div>
+                    
+                    <div id="online_payment_fields" style="display: none;">
+                        <div style="margin-bottom: 10px;">
+                            <label for="payment_number" style="display: block; margin-bottom: 5px;">
+                                <span id="payment_number_label">Account/Card Number:</span>
+                            </label>
+                            <input type="text" id="payment_number" name="payment_number" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        
+                        <div id="credit_card_fields" style="display: none;">
+                            <div style="margin-bottom: 10px;">
+                                <label for="expiry_date" style="display: block; margin-bottom: 5px;">Expiry Date:</label>
+                                <input type="month" id="expiry_date" name="expiry_date" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label for="cvv" style="display: block; margin-bottom: 5px;">CVV:</label>
+                                <input type="password" id="cvv" name="cvv" maxlength="4" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" style="background-color: #4CAF50; color: white; padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;">Submit Payment</button>
+                </form>
+
+                <script>
+                function togglePaymentFields() {
+                    const paymentMethod = document.getElementById('payment_method').value;
+                    const onlineFields = document.getElementById('online_payment_fields');
+                    const creditCardFields = document.getElementById('credit_card_fields');
+                    const paymentNumberLabel = document.getElementById('payment_number_label');
+                    
+                    if (paymentMethod === 'cash') {
+                        onlineFields.style.display = 'none';
+                    } else {
+                        onlineFields.style.display = 'block';
+                        if (paymentMethod === 'gcash') {
+                            creditCardFields.style.display = 'none';
+                            paymentNumberLabel.textContent = 'GCash Number:';
+                        } else if (paymentMethod === 'credit_card') {
+                            creditCardFields.style.display = 'block';
+                            paymentNumberLabel.textContent = 'Card Number:';
+                        }
+                    }
+                }
+                </script>
+            </div>
+        {% endif %}
+        
+        {% if booking.status == 'pending' %}
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd;">
+                <a href="{{ url_for('cancel_booking', booking_id=booking.booking_id) }}" style="display: inline-block; background-color: #dc3545; color: white; padding: 10px 15px; border-radius: 4px; text-decoration: none;">Cancel Booking</a>
+            </div>
+        {% endif %}
+        
+        <div style="margin-top: 20px; text-align: center;">
+            <a href="{{ url_for('user_dashboard') }}" style="display: inline-block; background-color: #6c757d; color: white; padding: 10px 15px; border-radius: 4px; text-decoration: none;">Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

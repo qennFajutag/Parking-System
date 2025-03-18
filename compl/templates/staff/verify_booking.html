@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto; padding: 20px;">
+    <h2 style="color: #4CAF50; margin-bottom: 20px;">Verify Booking</h2>
+    
+    <div style="background: white; border-radius: 5px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px;">
+        <form method="POST" action="{{ url_for('verify_booking') }}" style="display: flex; flex-direction: column; gap: 15px;">
+            <div>
+                <label for="booking_id" style="display: block; margin-bottom: 5px;">Booking ID:</label>
+                <input type="number" id="booking_id" name="booking_id" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            
+            <button type="submit" style="background-color: #4CAF50; color: white; padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;">Verify Booking</button>
+        </form>
+    </div>
+    
+    {% if booking %}
+        <div style="background: white; border-radius: 5px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h3 style="color: #4CAF50; margin-top: 0;">Booking Information</h3>
+            <p><strong>Booking ID:</strong> {{ booking.booking_id }}</p>
+            <p><strong>User:</strong> {{ booking.username }}</p>
+            <p><strong>Parking Spot:</strong> {{ booking.location }}</p>
+            <p><strong>Start Time:</strong> {{ booking.start_time }}</p>
+            <p><strong>End Time:</strong> {{ booking.end_time }}</p>
+            <p><strong>Status:</strong> <span class="status-{{ booking.status }}">{{ booking.status }}</span></p>
+            <p><strong>Payment Status:</strong> <span class="status-{{ booking.payment_status }}">{{ booking.payment_status }}</span></p>
+            
+            {% if booking.status == 'pending' %}
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <a href="{{ url_for('confirm_booking', booking_id=booking.booking_id) }}" style="flex: 1; background-color: #4CAF50; color: white; padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; text-align: center; text-decoration: none;">Confirm Booking</a>
+                    <a href="{{ url_for('cancel_booking_staff', booking_id=booking.booking_id) }}" style="flex: 1; background-color: #dc3545; color: white; padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; text-align: center; text-decoration: none;">Cancel Booking</a>
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+    
+    <div style="margin-top: 20px; text-align: center;">
+        <a href="{{ url_for('staff_dashboard') }}" style="display: inline-block; background-color: #6c757d; color: white; padding: 10px 15px; border-radius: 4px; text-decoration: none;">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

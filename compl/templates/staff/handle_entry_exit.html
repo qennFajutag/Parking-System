@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto; padding: 20px;">
+    <h2 style="color: #4CAF50; margin-bottom: 20px;">Handle Vehicle Entry/Exit</h2>
+    
+    <div style="background: white; border-radius: 5px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px;">
+        <form method="POST" action="{{ url_for('handle_entry_exit') }}" style="display: flex; flex-direction: column; gap: 15px;">
+            <div>
+                <label for="booking_id" style="display: block; margin-bottom: 5px;">Booking ID:</label>
+                <input type="number" id="booking_id" name="booking_id" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            
+            <div>
+                <label for="action_type" style="display: block; margin-bottom: 5px;">Action:</label>
+                <select id="action_type" name="action_type" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <option value="entry">Vehicle Entry</option>
+                    <option value="exit">Vehicle Exit</option>
+                </select>
+            </div>
+            
+            <button type="submit" style="background-color: #4CAF50; color: white; padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;">Process</button>
+        </form>
+    </div>
+    
+    {% if message %}
+        <div class="flash-message" style="margin-bottom: 20px;">
+            {{ message }}
+        </div>
+    {% endif %}
+    
+    {% if booking %}
+        <div style="background: white; border-radius: 5px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h3 style="color: #4CAF50; margin-top: 0;">Booking Information</h3>
+            <p><strong>Booking ID:</strong> {{ booking.booking_id }}</p>
+            <p><strong>User:</strong> {{ booking.username }}</p>
+            <p><strong>Parking Spot:</strong> {{ booking.location }}</p>
+            <p><strong>Start Time:</strong> {{ booking.start_time }}</p>
+            <p><strong>End Time:</strong> {{ booking.end_time }}</p>
+            <p><strong>Status:</strong> <span class="status-{{ booking.status }}">{{ booking.status }}</span></p>
+            <p><strong>Payment Status:</strong> <span class="status-{{ booking.payment_status }}">{{ booking.payment_status }}</span></p>
+        </div>
+    {% endif %}
+    
+    <div style="margin-top: 20px; text-align: center;">
+        <a href="{{ url_for('staff_dashboard') }}" style="display: inline-block; background-color: #6c757d; color: white; padding: 10px 15px; border-radius: 4px; text-decoration: none;">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

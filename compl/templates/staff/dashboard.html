@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="padding: 20px;">
+    <h2 style="color: #4CAF50; margin-bottom: 20px;">Staff Dashboard</h2>
+    
+    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+        <!-- Staff Profile Card -->
+        <div style="flex: 1; min-width: 300px; background: white; border-radius: 5px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h3 style="color: #4CAF50; margin-top: 0;">Welcome, {{ session.username }}!</h3>
+            <p><a href="{{ url_for('logout') }}" style="color: #dc3545; text-decoration: none;">Logout</a></p>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div style="flex: 2; min-width: 300px; background: white; border-radius: 5px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h3 style="color: #4CAF50; margin-top: 0;">Quick Actions</h3>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px;">
+                <a href="{{ url_for('verify_booking') }}" style="flex: 1; min-width: 150px; background-color: #4CAF50; color: white; padding: 10px; border-radius: 4px; text-align: center; text-decoration: none;">Verify Booking</a>
+                <a href="{{ url_for('handle_entry_exit') }}" style="flex: 1; min-width: 150px; background-color: #007bff; color: white; padding: 10px; border-radius: 4px; text-align: center; text-decoration: none;">Handle Entry/Exit</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- All Bookings -->
+    <div style="margin-top: 20px; background: white; border-radius: 5px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <h3 style="color: #4CAF50; margin-top: 0;">All Bookings</h3>
+        
+        {% if bookings %}
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background-color: #f2f2f2;">
+                            <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Booking ID</th>
+                            <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">User</th>
+                            <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Location</th>
+                            <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Start Time</th>
+                            <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">End Time</th>
+                            <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Status</th>
+                            <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Payment</th>
+                            <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in bookings %}
+                            <tr>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ booking.booking_id }}</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ booking.username }}</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ booking.location }}</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ booking.start_time }}</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ booking.end_time }}</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ booking.status }}</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ booking.payment_status }}</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">
+                                    {% if booking.status == 'pending' %}
+                                        <a href="{{ url_for('confirm_booking', booking_id=booking.booking_id) }}" style="color: #4CAF50; text-decoration: none; margin-right: 10px;">Confirm</a>
+                                        <a href="{{ url_for('cancel_booking_staff', booking_id=booking.booking_id) }}" style="color: #dc3545; text-decoration: none;">Cancel</a>
+                                    {% elif booking.status == 'pending_payment' %}
+                                        <a href="#" onclick="showPaymentDetails('{{ booking.booking_id }}')" style="color: #007bff; text-decoration: none; margin-right: 10px;">View Payment</a>
+                                        <a href="{{ url_for('verify_payment', booking_id=booking.booking_id, action='accept') }}" style="color: #4CAF50; text-decoration: none; margin-right: 10px;">Accept Payment</a>
+                                        <a href="{{ url_for('verify_payment', booking_id=booking.booking_id, action='reject') }}" style="color: #dc3545; text-decoration: none;">Reject Payment</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p>No bookings available.</p>
+        {% endif %}
+    </div>
+    
+    <!-- Parking Spots Overview -->
+    <div style="margin-top: 20px; background: white; border-radius: 5px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <h3 style="color: #4CAF50; margin-top: 0;">Parking Spots Overview</h3>
+        
+        {% if parking_spots %}
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background-color: #f2f2f2;">
+                            <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Spot ID</th>
+                            <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Location</th>
+                            <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Status</th>
+                            <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Price/Hour</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for spot in parking_spots %}
+                            <tr>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ spot.spot_id }}</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ spot.location }}</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">
+                                    <span class="status-{{ spot.status }}">{{ spot.status }}</span>
+                                </td>
+                                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${{ spot.price_per_hour }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p>No parking spots available.</p>
+        {% endif %}
+    </div>
+    
+    <!-- Payment Details Modal -->
+    <div id="paymentModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+        <div style="position: relative; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 5px; max-width: 500px;">
+            <h3 style="color: #4CAF50; margin-top: 0;">Payment Details</h3>
+            <div id="paymentDetails">Loading...</div>
+            <button onclick="closePaymentModal()" style="background-color: #6c757d; color: white; padding: 8px 15px; border: none; border-radius: 4px; margin-top: 15px; cursor: pointer;">Close</button>
+        </div>
+    </div>
+
+    <script>
+    function showPaymentDetails(bookingId) {
+        fetch(`/staff/payment_details/${bookingId}`)
+            .then(response => response.json())
+            .then(data => {
+                const details = document.getElementById('paymentDetails');
+                details.innerHTML = `
+                    <p><strong>Payment Method:</strong> ${data.payment_method}</p>
+                    <p><strong>Amount:</strong> $${data.amount}</p>
+                    <p><strong>Payment Number:</strong> ${data.payment_number}</p>
+                    ${data.payment_method === 'credit_card' ? `<p><strong>Expiry Date:</strong> ${data.expiry_date}</p>` : ''}
+                    <p><strong>Date:</strong> ${data.created_at}</p>
+                `;
+                document.getElementById('paymentModal').style.display = 'block';
+            });
+    }
+
+    function closePaymentModal() {
+        document.getElementById('paymentModal').style.display = 'none';
+    }
+    </script>
+</div>
+{% endblock %}
